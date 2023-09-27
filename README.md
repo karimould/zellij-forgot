@@ -3,7 +3,7 @@
 Zellij is your solution for quickly accessing and remembering your keybindings (or anything else) in Zellij.
 Forget the hassle of remembering all your keybindings (or other stuff), let Zellij Forgot do it for you!
 
-![usage](https://github.com/karimould/zellij-forgot/raw/main/assets/zellij_forgot.gif)
+![usage](https://github.com/karimould/zellij-forgot/raw/main/assets/forgot.gif)
 
 ## 🛠️ Installation
 
