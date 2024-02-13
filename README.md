@@ -17,7 +17,35 @@ You can find the current release [here](https://github.com)
 
 ## 🎹 Set Up Your Keybinds and Activate 'Zellij Forgot' with Ease
 
-The 'Zellij Forgot' plugin fetches the displayed keybinds directly from the plugin's configuration key-value map.
+The 'Zellij Forgot' plugin fetches the displayed keybinds—or anything else you want to remember—directly
+from the plugin's configuration key-value map, or automatically loads them from your Zellij keybinds.
+
+However, if you prefer not to automatically load the Zellij keybindings,
+you can easily opt out of this feature.
+To disable automatic keybinding loading, simply add the following line to your plugin configuration:
+
+```kdl
+
+            "LOAD_ZELLIJ_BINDINGS" "false"
+
+```
+
+Here is an example with some stuff to remember/forget.
+
+```kdl
+shared_except "locked" {
+    bind "Ctrl y" {
+        LaunchOrFocusPlugin "file:~/zellij-plugins/zellij_forgot.wasm" {
+            "LOAD_ZELLIJ_BINDINGS" "false"
+            "buy eggs" "5x"
+            "learn rust" "5h"
+            "clean up code" "tomorrow"
+            floating true
+        }
+    }
+}
+```
+
 Below is an example using Zellij's default keybinds.
 To integrate this into your setup, append the following snippet to your zellij config, specifically within the keybinds segment:
 
