@@ -1,9 +1,13 @@
 use owo_colors::OwoColorize;
 use std::collections::BTreeMap;
 use zellij_tile::prelude::*;
+mod helper;
+
+static LOAD_ZELLIJ_BINDINGS: &str = "LOAD_ZELLIJ_BINDINGS";
 
 #[derive(Default)]
 struct State {
+    load_zellij_bindings: Option<String>,
     keybinds: BTreeMap<String, String>,
     filter: String,
 }
@@ -15,7 +19,10 @@ impl State {
         } else {
             self.keybinds
                 .iter()
-                .filter(|(k, v)| k.contains(&self.filter) || v.contains(&self.filter))
+                .filter(|(k, v)| {
+                    k.to_lowercase().contains(&self.filter.to_lowercase())
+                        || v.to_lowercase().contains(&self.filter.to_lowercase())
+                })
                 .collect()
         }
     }
@@ -38,9 +45,11 @@ impl ZellijPlugin for State {
             PermissionType::ReadApplicationState,
             PermissionType::ChangeApplicationState,
         ]);
-        subscribe(&[EventType::Key]);
+        subscribe(&[EventType::Key, EventType::ModeUpdate]);
 
+        self.load_zellij_bindings = configuration.get(LOAD_ZELLIJ_BINDINGS).map(|x| x.clone());
         self.keybinds = configuration;
+        self.keybinds.remove(LOAD_ZELLIJ_BINDINGS);
     }
 
     fn update(&mut self, event: Event) -> bool {
@@ -58,6 +67,23 @@ impl ZellijPlugin for State {
                 if c.is_ascii_alphabetic() || c.is_ascii_digit() || c.is_whitespace() =>
             {
                 self.filter.push(c);
+
+                should_render = true;
+            }
+            Event::ModeUpdate(mode_info) => {
+                match self.load_zellij_bindings == Some("false".to_string()) {
+                    true => {}
+                    false => {
+                        for (_, key_actions) in mode_info.keybinds {
+                            for (key, actions) in key_actions {
+                                let key_str = key.to_string();
+                                let action_str = helper::actions_to_string(actions);
+
+                                self.keybinds.insert(action_str, key_str);
+                            }
+                        }
+                    }
+                }
 
                 should_render = true;
             }
