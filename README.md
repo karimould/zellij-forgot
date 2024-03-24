@@ -9,7 +9,7 @@ Forget the hassle of remembering all your keybindings (or other stuff), let Zell
 
 To install the Zellij Forgot plugin, follow the standard plugin installation process for Zellij.
 Place the compiled zellij_forgot.wasm file in the appropriate directory.
-You can find the current release [here](https://github.com)
+You can find the current release [here](https://github.com/karimould/zellij-forgot/releases)
 
 1. Download the `zellij_forgot.wasm` file from the release matching your installed Zellij version
 2. Place it in `~/zellij-plugins`
