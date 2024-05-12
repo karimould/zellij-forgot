@@ -14,19 +14,15 @@ struct State {
 
 impl State {
     fn filtered_keybinds(&self) -> Vec<(&String, &String)> {
-        if self.filter.is_empty() {
-            self.keybinds.iter().collect()
-        } else {
-            self.keybinds
-                .iter()
-                .filter(|(k, v)| {
-                    k.to_lowercase().contains(&self.filter.to_lowercase())
-                        || v.to_lowercase().contains(&self.filter.to_lowercase())
-                })
-                .collect()
-        }
-    }
+        let filter = self.filter.to_lowercase();
 
+        self.keybinds
+            .iter()
+            .filter(|(k, v)| {
+                k.to_lowercase().contains(&filter) || v.to_lowercase().contains(&filter)
+            })
+            .collect()
+    }
     fn max_key_length(&self) -> usize {
         return self
             .filtered_keybinds()
@@ -64,22 +60,29 @@ impl ZellijPlugin for State {
                 should_render = true;
             }
             Event::Key(Key::Char(c))
-                if c.is_ascii_alphabetic() || c.is_ascii_digit() || c.is_whitespace() =>
+                if c.is_ascii_alphabetic()
+                    || c.is_ascii_digit()
+                    || c == '-'
+                    || c == ':'
+                    || c.is_whitespace() =>
             {
                 self.filter.push(c);
-
                 should_render = true;
             }
             Event::ModeUpdate(mode_info) => {
                 match self.load_zellij_bindings == Some("false".to_string()) {
                     true => {}
                     false => {
-                        for (_, key_actions) in mode_info.keybinds {
+                        for (mode, key_actions) in mode_info.keybinds {
+                            let mode_str = helper::modes_to_string(mode).cyan().bold().to_string();
                             for (key, actions) in key_actions {
                                 let key_str = key.to_string();
-                                let action_str = helper::actions_to_string(actions);
-
-                                self.keybinds.insert(action_str, key_str);
+                                let action_str =
+                                    helper::actions_to_string(actions).cyan().bold().to_string();
+                                self.keybinds.insert(
+                                    format!("Mode: {}, Action: {}", mode_str, action_str),
+                                    key_str,
+                                );
                             }
                         }
                     }
@@ -98,7 +101,7 @@ impl ZellijPlugin for State {
             println!(
                 "{} {:width$} {} {}",
                 "-".green().to_string(),
-                key.cyan().bold(),
+                key,
                 "->".green().to_string(),
                 value.cyan().bold(),
                 width = &self.max_key_length()
@@ -119,3 +122,4 @@ impl ZellijPlugin for State {
         );
     }
 }
+

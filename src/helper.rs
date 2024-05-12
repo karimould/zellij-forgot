@@ -1,25 +1,25 @@
-use zellij_tile::prelude::actions::Action;
+use zellij_tile::prelude::{actions::Action, InputMode};
 
-// pub fn modes_to_string(mode: InputMode) -> String {
-//     match mode {
-//         InputMode::Normal => "Normal".to_string(),
-//         InputMode::Locked => "Locked".to_string(),
-//         InputMode::Resize => "Resize".to_string(),
-//         InputMode::Pane => "Pane".to_string(),
-//         InputMode::Tab => "Tab".to_string(),
-//         InputMode::Scroll => "Scroll".to_string(),
-//         InputMode::EnterSearch => "Enter Search".to_string(),
-//         InputMode::Search => "Search".to_string(),
-//         InputMode::RenameTab => "RenameTab".to_string(),
-//         InputMode::RenamePane => "RenamePane".to_string(),
-//         InputMode::Session => "Session".to_string(),
-//         InputMode::Move => "Move".to_string(),
-//         InputMode::Prompt => "Prompt".to_string(),
-//         InputMode::Tmux => "Tmux".to_string(),
-//     }
-// }
+pub fn modes_to_string(mode: InputMode) -> String {
+    match mode {
+        InputMode::Normal => "Normal".to_string(),
+        InputMode::Locked => "Locked".to_string(),
+        InputMode::Resize => "Resize".to_string(),
+        InputMode::Pane => "Pane".to_string(),
+        InputMode::Tab => "Tab".to_string(),
+        InputMode::Scroll => "Scroll".to_string(),
+        InputMode::EnterSearch => "Enter Search".to_string(),
+        InputMode::Search => "Search".to_string(),
+        InputMode::RenameTab => "RenameTab".to_string(),
+        InputMode::RenamePane => "RenamePane".to_string(),
+        InputMode::Session => "Session".to_string(),
+        InputMode::Move => "Move".to_string(),
+        InputMode::Prompt => "Prompt".to_string(),
+        InputMode::Tmux => "Tmux".to_string(),
+    }
+}
 
-// 89 Actions, Zellij Version 0.39.2
+//  Zellij Version 0.40.1
 pub fn actions_to_string(actions: Vec<Action>) -> String {
     actions
         .iter()
@@ -56,12 +56,15 @@ pub fn actions_to_string(actions: Vec<Action>) -> String {
             Action::NewPane(direction, command) => {
                 format!("NewPane({:?}, {:?})", direction, command)
             }
-            Action::EditFile(path, line, path_buf, direction, bool1, bool2) => format!(
-                "EditFile({:?}, {:?}, {:?}, {:?}, {}, {})",
-                path, line, path_buf, direction, bool1, bool2
+            Action::EditFile(path, line, path_buf, direction, bool1, bool2, option) => format!(
+                "EditFile({:?}, {:?}, {:?}, {:?}, {}, {}, {:?})",
+                path, line, path_buf, direction, bool1, bool2, option
             ),
-            Action::NewFloatingPane(run_command_action, command) => {
-                format!("NewFloatingPane({:?}, {:?})", run_command_action, command)
+            Action::NewFloatingPane(run_command_action, command, option) => {
+                format!(
+                    "NewFloatingPane({:?}, {:?}, {:?})",
+                    run_command_action, command, option
+                )
             }
             Action::NewTiledPane(direction, run_command_action, command) => format!(
                 "NewTiledPane({:?}, {:?}, {:?})",
@@ -94,8 +97,8 @@ pub fn actions_to_string(actions: Vec<Action>) -> String {
             Action::LeftClick(position) => format!("LeftClick({:?})", position),
             Action::RightClick(position) => format!("RightClick({:?})", position),
             Action::MiddleClick(position) => format!("MiddleClick({:?})", position),
-            Action::LaunchOrFocusPlugin(_, _, _, _) => "LaunchOrFocusPlugin".to_string(),
-            Action::LaunchPlugin(_, _, _) => "LaunchPlugin".to_string(),
+            Action::LaunchOrFocusPlugin(_, _, _, _, _) => "LaunchOrFocusPlugin".to_string(),
+            Action::LaunchPlugin(_, _, _, _, _) => "LaunchPlugin".to_string(),
             Action::LeftMouseRelease(position) => format!("LeftMouseRelease({:?})", position),
             Action::RightMouseRelease(position) => format!("RightMouseRelease({:?})", position),
             Action::MiddleMouseRelease(position) => format!("MiddleMouseRelease({:?})", position),
@@ -113,9 +116,9 @@ pub fn actions_to_string(actions: Vec<Action>) -> String {
             Action::PreviousSwapLayout => "PreviousSwapLayout".to_string(),
             Action::NextSwapLayout => "NextSwapLayout".to_string(),
             Action::QueryTabNames => "QueryTabNames".to_string(),
-            Action::NewTiledPluginPane(_, _) => "NewTiledPluginPane".to_string(),
-            Action::NewFloatingPluginPane(_, _) => "NewFloatingPluginPane".to_string(),
-            Action::NewInPlacePluginPane(_, _) => "NewInPlacePluginPane".to_string(),
+            Action::NewTiledPluginPane(_, _, _, _) => "NewTiledPluginPane".to_string(),
+            Action::NewFloatingPluginPane(_, _, _, _, _) => "NewFloatingPluginPane".to_string(),
+            Action::NewInPlacePluginPane(_, _, _) => "NewInPlacePluginPane".to_string(),
             Action::StartOrReloadPlugin(_) => "StartOrReloadPlugin".to_string(),
             Action::CloseTerminalPane(id) => format!("CloseTerminalPane({})", id),
             Action::ClosePluginPane(id) => format!("ClosePluginPane({})", id),
