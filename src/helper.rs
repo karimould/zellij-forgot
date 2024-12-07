@@ -102,7 +102,9 @@ pub fn actions_to_string(actions: Vec<Action>) -> String {
             Action::LeftClick(position) => format!("LeftClick({:?})", position),
             Action::RightClick(position) => format!("RightClick({:?})", position),
             Action::MiddleClick(position) => format!("MiddleClick({:?})", position),
-            Action::LaunchOrFocusPlugin(_, _, _, _, _) => "LaunchOrFocusPlugin".to_string(),
+            Action::LaunchOrFocusPlugin(plugin, _, _, _, _) => {
+                format!("LaunchOrFocusPlugin({})", plugin.location_string())
+            }
             Action::LaunchPlugin(_, _, _, _, _) => "LaunchPlugin".to_string(),
             Action::LeftMouseRelease(position) => format!("LeftMouseRelease({:?})", position),
             Action::RightMouseRelease(position) => format!("RightMouseRelease({:?})", position),
@@ -121,10 +123,18 @@ pub fn actions_to_string(actions: Vec<Action>) -> String {
             Action::PreviousSwapLayout => "PreviousSwapLayout".to_string(),
             Action::NextSwapLayout => "NextSwapLayout".to_string(),
             Action::QueryTabNames => "QueryTabNames".to_string(),
-            Action::NewTiledPluginPane(_, _, _, _) => "NewTiledPluginPane".to_string(),
-            Action::NewFloatingPluginPane(_, _, _, _, _) => "NewFloatingPluginPane".to_string(),
-            Action::NewInPlacePluginPane(_, _, _) => "NewInPlacePluginPane".to_string(),
-            Action::StartOrReloadPlugin(_) => "StartOrReloadPlugin".to_string(),
+            Action::NewTiledPluginPane(plugin, _, _, _) => {
+                format!("NewTiledPluginPane({})", plugin.location_string())
+            }
+            Action::NewFloatingPluginPane(plugin, _, _, _, _) => {
+                format!("NewFloatingPluginPane({})", plugin.location_string())
+            }
+            Action::NewInPlacePluginPane(plugin, _, _) => {
+                format!("NewInPlacePluginPane({})", plugin.location_string())
+            }
+            Action::StartOrReloadPlugin(plugin) => {
+                format!("StartOrReloadPlugin({})", plugin.location_string())
+            }
             Action::CloseTerminalPane(id) => format!("CloseTerminalPane({})", id),
             Action::ClosePluginPane(id) => format!("ClosePluginPane({})", id),
             Action::FocusTerminalPaneWithId(id, force) => {
