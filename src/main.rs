@@ -24,12 +24,11 @@ impl State {
             .collect()
     }
     fn max_key_length(&self) -> usize {
-        return self
-            .filtered_keybinds()
+        self.filtered_keybinds()
             .iter()
             .map(|(key, _)| key.len())
             .max()
-            .unwrap_or(0);
+            .unwrap_or(0)
     }
 }
 
@@ -43,7 +42,7 @@ impl ZellijPlugin for State {
         ]);
         subscribe(&[EventType::Key, EventType::ModeUpdate]);
 
-        self.load_zellij_bindings = configuration.get(LOAD_ZELLIJ_BINDINGS).map(|x| x.clone());
+        self.load_zellij_bindings = configuration.get(LOAD_ZELLIJ_BINDINGS).cloned();
         self.keybinds = configuration;
         self.keybinds.remove(LOAD_ZELLIJ_BINDINGS);
     }
@@ -51,24 +50,25 @@ impl ZellijPlugin for State {
     fn update(&mut self, event: Event) -> bool {
         let mut should_render = false;
         match event {
-            Event::Key(Key::Esc | Key::Ctrl('c')) => {
-                close_focus();
-            }
-            Event::Key(Key::Backspace) => {
-                self.filter.pop();
-
-                should_render = true;
-            }
-            Event::Key(Key::Char(c))
-                if c.is_ascii_alphabetic()
-                    || c.is_ascii_digit()
-                    || c == '-'
-                    || c == ':'
-                    || c.is_whitespace() =>
-            {
-                self.filter.push(c);
-                should_render = true;
-            }
+            Event::Key(key) => match key.bare_key {
+                BareKey::Esc => {
+                    close_focus();
+                }
+                BareKey::Char('c') if key.has_modifiers(&[KeyModifier::Ctrl]) => {
+                    close_focus();
+                }
+                BareKey::Backspace => {
+                    self.filter.pop();
+                    should_render = true;
+                }
+                BareKey::Char(c)
+                    if c.is_ascii_alphanumeric() || c == '-' || c == ':' || c.is_whitespace() =>
+                {
+                    self.filter.push(c);
+                    should_render = true;
+                }
+                _ => {}
+            },
             Event::ModeUpdate(mode_info) => {
                 match self.load_zellij_bindings == Some("false".to_string()) {
                     true => {}
@@ -100,9 +100,9 @@ impl ZellijPlugin for State {
         for (key, value) in &self.filtered_keybinds() {
             println!(
                 "{} {:width$} {} {}",
-                "-".green().to_string(),
+                "-".green(),
                 key,
-                "->".green().to_string(),
+                "->".green(),
                 value.cyan().bold(),
                 width = &self.max_key_length()
             );
@@ -122,4 +122,3 @@ impl ZellijPlugin for State {
         );
     }
 }
-
