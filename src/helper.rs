@@ -19,13 +19,18 @@ pub fn modes_to_string(mode: InputMode) -> String {
     }
 }
 
-//  Zellij Version 0.40.1
+//  Zellij Version 0.41.2
 pub fn actions_to_string(actions: Vec<Action>) -> String {
     actions
         .iter()
         .map(|action| match action {
             Action::Quit => "Quit".to_string(),
-            Action::Write(data) => format!("Write({})", String::from_utf8_lossy(data)),
+            Action::Write(key, data, bool) => format!(
+                "Write({:?}, {}, {})",
+                key,
+                String::from_utf8_lossy(data),
+                bool
+            ),
             Action::WriteChars(chars) => format!("WriteChars({})", chars),
             Action::SwitchToMode(mode) => format!("SwitchToMode({:?})", mode),
             Action::SwitchModeForAllClients(mode) => format!("SwitchModeForAllClients({:?})", mode),
@@ -53,12 +58,12 @@ pub fn actions_to_string(actions: Vec<Action>) -> String {
             Action::ToggleFocusFullscreen => "ToggleFocusFullscreen".to_string(),
             Action::TogglePaneFrames => "TogglePaneFrames".to_string(),
             Action::ToggleActiveSyncTab => "ToggleActiveSyncTab".to_string(),
-            Action::NewPane(direction, command) => {
-                format!("NewPane({:?}, {:?})", direction, command)
+            Action::NewPane(direction, command, bool) => {
+                format!("NewPane({:?}, {:?}, {})", direction, command, bool)
             }
-            Action::EditFile(path, line, path_buf, direction, bool1, bool2, option) => format!(
-                "EditFile({:?}, {:?}, {:?}, {:?}, {}, {}, {:?})",
-                path, line, path_buf, direction, bool1, bool2, option
+            Action::EditFile(path, direction, bool1, bool2, bool3, coordinates) => format!(
+                "EditFile({:?}, {:?}, {}, {}, {}, {:?})",
+                path, direction, bool1, bool2, bool3, coordinates
             ),
             Action::NewFloatingPane(run_command_action, command, option) => {
                 format!(
@@ -80,7 +85,7 @@ pub fn actions_to_string(actions: Vec<Action>) -> String {
                 format!("PaneNameInput({})", String::from_utf8_lossy(data))
             }
             Action::UndoRenamePane => "UndoRenamePane".to_string(),
-            Action::NewTab(_, _, _, _, _) => "NewTab".to_string(),
+            Action::NewTab(..) => "NewTab".to_string(),
             Action::NoOp => "NoOp".to_string(),
             Action::GoToNextTab => "GoToNextTab".to_string(),
             Action::GoToPreviousTab => "GoToPreviousTab".to_string(),
@@ -97,7 +102,9 @@ pub fn actions_to_string(actions: Vec<Action>) -> String {
             Action::LeftClick(position) => format!("LeftClick({:?})", position),
             Action::RightClick(position) => format!("RightClick({:?})", position),
             Action::MiddleClick(position) => format!("MiddleClick({:?})", position),
-            Action::LaunchOrFocusPlugin(_, _, _, _, _) => "LaunchOrFocusPlugin".to_string(),
+            Action::LaunchOrFocusPlugin(plugin, _, _, _, _) => {
+                format!("LaunchOrFocusPlugin({})", plugin.location_string())
+            }
             Action::LaunchPlugin(_, _, _, _, _) => "LaunchPlugin".to_string(),
             Action::LeftMouseRelease(position) => format!("LeftMouseRelease({:?})", position),
             Action::RightMouseRelease(position) => format!("RightMouseRelease({:?})", position),
@@ -116,10 +123,18 @@ pub fn actions_to_string(actions: Vec<Action>) -> String {
             Action::PreviousSwapLayout => "PreviousSwapLayout".to_string(),
             Action::NextSwapLayout => "NextSwapLayout".to_string(),
             Action::QueryTabNames => "QueryTabNames".to_string(),
-            Action::NewTiledPluginPane(_, _, _, _) => "NewTiledPluginPane".to_string(),
-            Action::NewFloatingPluginPane(_, _, _, _, _) => "NewFloatingPluginPane".to_string(),
-            Action::NewInPlacePluginPane(_, _, _) => "NewInPlacePluginPane".to_string(),
-            Action::StartOrReloadPlugin(_) => "StartOrReloadPlugin".to_string(),
+            Action::NewTiledPluginPane(plugin, _, _, _) => {
+                format!("NewTiledPluginPane({})", plugin.location_string())
+            }
+            Action::NewFloatingPluginPane(plugin, _, _, _, _) => {
+                format!("NewFloatingPluginPane({})", plugin.location_string())
+            }
+            Action::NewInPlacePluginPane(plugin, _, _) => {
+                format!("NewInPlacePluginPane({})", plugin.location_string())
+            }
+            Action::StartOrReloadPlugin(plugin) => {
+                format!("StartOrReloadPlugin({})", plugin.location_string())
+            }
             Action::CloseTerminalPane(id) => format!("CloseTerminalPane({})", id),
             Action::ClosePluginPane(id) => format!("ClosePluginPane({})", id),
             Action::FocusTerminalPaneWithId(id, force) => {
