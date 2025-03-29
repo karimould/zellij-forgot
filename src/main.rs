@@ -14,14 +14,32 @@ struct State {
 
 impl State {
     fn filtered_keybinds(&self) -> Vec<(&String, &String)> {
-        let filter = self.filter.to_lowercase();
+        if self.filter.is_empty() {
+            return self.keybinds.iter().collect();
+        }
 
-        self.keybinds
+        let filter = self.filter.to_lowercase();
+        let mut matches: Vec<(&String, &String, i64)> = self
+            .keybinds
             .iter()
-            .filter(|(k, v)| {
-                k.to_lowercase().contains(&filter) || v.to_lowercase().contains(&filter)
+            .filter_map(|(k, v)| {
+                let key_score = rust_fuzzy_search::fuzzy_compare(&filter, &k.to_lowercase());
+                let value_score = rust_fuzzy_search::fuzzy_compare(&filter, &v.to_lowercase());
+                let best_score = key_score.max(value_score);
+
+                if best_score > 0 {
+                    Some((k, v, best_score))
+                } else {
+                    None
+                }
             })
-            .collect()
+            .collect();
+
+        // Sort by score in descending order (higher scores first)
+        matches.sort_by(|a, b| b.2.cmp(&a.2));
+
+        // Remove the score and return just the key-value pairs
+        matches.into_iter().map(|(k, v, _)| (k, v)).collect()
     }
     fn max_key_length(&self) -> usize {
         self.filtered_keybinds()

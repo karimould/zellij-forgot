@@ -2226,6 +2226,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust-fuzzy-search"
+version = "0.1.1"
+source = "git+https://gitlab.com/EnricoCh/rust-fuzzy-search#ee61779b91ba976bb8da861ff2f1a825f1be1464"
+
+[[package]]
 name = "rustc-demangle"
 version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3366,5 +3371,6 @@ version = "0.2.0"
 dependencies = [
  "chrono",
  "owo-colors 4.1.0",
+ "rust-fuzzy-search",
  "zellij-tile",
 ]
